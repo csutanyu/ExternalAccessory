@@ -1,0 +1,3 @@
+ExternalAccessoryを扱うManager及びSessionController
+
+テスト中です
