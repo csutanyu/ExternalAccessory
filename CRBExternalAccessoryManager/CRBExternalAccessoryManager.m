@@ -144,14 +144,14 @@ NSString *CRBExternalAccessoryManagerReceiveData = @"CRBExternalAccessoryManager
 
 #pragma mark Public Methods
 + (CRBExternalAccessoryManager *)sharedManager {
-  static CRBExternalAccessoryManager *_externalAccesarymanager = nil;
+  static CRBExternalAccessoryManager *_manager = nil;
   static dispatch_once_t onceToken;
   
   dispatch_once(&onceToken, ^{
-    _externalAccesarymanager = [[CRBExternalAccessoryManager alloc] init];
+    _manager = [[CRBExternalAccessoryManager alloc] init];
   });
   
-  return _externalAccesarymanager;
+  return _manager;
 }
 
 // プロトコルを指定して、接続、切断のモニタリングを開始する
@@ -238,6 +238,5 @@ NSString *CRBExternalAccessoryManagerReceiveData = @"CRBExternalAccessoryManager
   
   return YES;
 }
-
 
 @end

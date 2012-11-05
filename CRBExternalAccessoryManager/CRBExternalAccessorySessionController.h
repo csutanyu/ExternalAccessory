@@ -27,6 +27,10 @@ extern NSString *CRBExternalAccessorySessionDataReceivedNotification;
   NSMutableData *_writeDataBuffer;
   NSMutableData *_readDataBuffer;
 }
+@property (nonatomic, readonly) EAAccessory *accessory;
+@property (nonatomic, readonly) NSString *protocolString;
+@property (strong) NSInputStream *inputStream;
+@property (strong) NSOutputStream *outputStream;
 
 + (CRBExternalAccessorySessionController *)sharedController;
 
@@ -40,8 +44,5 @@ extern NSString *CRBExternalAccessorySessionDataReceivedNotification;
 
 - (NSUInteger)readBytesAvailable;
 - (NSData *)readData:(NSUInteger)bytesToRead;
-
-@property (nonatomic, readonly) EAAccessory *accessory;
-@property (nonatomic, readonly) NSString *protocolString;
 
 @end

@@ -34,9 +34,9 @@ NSString *CRBExternalAccessorySessionDataReceivedNotification = @"CRBExternalAcc
 #pragma mark Private Methods
 - (void)_writeData {
   @synchronized(self) {
-    while (([[_session outputStream] hasSpaceAvailable]) && ([_writeDataBuffer length] > 0)) {
-      NSInteger bytesWritten = [[_session outputStream] write:[_writeDataBuffer bytes]
-                                                    maxLength:[_writeDataBuffer length]];
+    while (([_outputStream hasSpaceAvailable]) && ([_writeDataBuffer length] > 0)) {
+      NSInteger bytesWritten = [_outputStream write:[_writeDataBuffer bytes]
+                                          maxLength:[_writeDataBuffer length]];
       
 #ifdef OUTPUT_DATA_TO_LOG
       NSLog(@"Write Data (%d byte) -> %@", bytesWritten, [_writeDataBuffer description]);
@@ -57,10 +57,9 @@ NSString *CRBExternalAccessorySessionDataReceivedNotification = @"CRBExternalAcc
 - (void)_readData {
   @synchronized(self) {
     uint8_t buf[EAD_INPUT_BUFFER_SIZE];
-    while ([[_session inputStream] hasBytesAvailable]) {
-      NSInteger bytesRead = [[_session inputStream]
-                             read:buf
-                             maxLength:EAD_INPUT_BUFFER_SIZE];
+    while ([_inputStream hasBytesAvailable]) {
+      NSInteger bytesRead = [_inputStream read:buf
+                                     maxLength:EAD_INPUT_BUFFER_SIZE];
       
       if (_readDataBuffer == nil) {
         _readDataBuffer = [[NSMutableData alloc] init];
@@ -121,15 +120,17 @@ NSString *CRBExternalAccessorySessionDataReceivedNotification = @"CRBExternalAcc
     return NO;
   }
   
-  [[_session inputStream] setDelegate:self];
-  [[_session inputStream] scheduleInRunLoop:[NSRunLoop currentRunLoop]
-                                    forMode:NSDefaultRunLoopMode];
-  [[_session inputStream] open];
+  self.inputStream = [_session inputStream];
+  [_inputStream setDelegate:self];
+  [_inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop]
+                          forMode:NSDefaultRunLoopMode];
+  [_inputStream open];
   
-  [[_session outputStream] setDelegate:self];
-  [[_session outputStream] scheduleInRunLoop:[NSRunLoop currentRunLoop]
-                                     forMode:NSDefaultRunLoopMode];
-  [[_session outputStream] open];
+  self.outputStream = [_session outputStream];
+  [_outputStream setDelegate:self];
+  [_outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop]
+                           forMode:NSDefaultRunLoopMode];
+  [_outputStream open];
   
   return YES;
 }
@@ -137,14 +138,17 @@ NSString *CRBExternalAccessorySessionDataReceivedNotification = @"CRBExternalAcc
 - (void)closeSession {
   NSLog(@"%s", __PRETTY_FUNCTION__);
   
-  [[_session inputStream] close];
-  [[_session inputStream] removeFromRunLoop:[NSRunLoop currentRunLoop]
-                                    forMode:NSDefaultRunLoopMode];
-  [[_session inputStream] setDelegate:nil];
-  [[_session outputStream] close];
-  [[_session outputStream] removeFromRunLoop:[NSRunLoop currentRunLoop]
-                                     forMode:NSDefaultRunLoopMode];
-  [[_session outputStream] setDelegate:nil];
+  [_inputStream close];
+  [_inputStream removeFromRunLoop:[NSRunLoop currentRunLoop]
+                          forMode:NSDefaultRunLoopMode];
+  [_inputStream setDelegate:nil];
+  self.inputStream = nil;
+  
+  [_outputStream close];
+  [_outputStream removeFromRunLoop:[NSRunLoop currentRunLoop]
+                           forMode:NSDefaultRunLoopMode];
+  [_outputStream setDelegate:nil];
+  self.outputStream = nil;
   
   _session = nil;
   
