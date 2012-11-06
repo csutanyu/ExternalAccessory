@@ -111,7 +111,7 @@ NSString *CRBExternalAccessoryManagerReceiveData = @"CRBExternalAccessoryManager
 }
 
 - (void)sendDidDisconnectNotification {
-  NSNotification *notification = [NSNotification notificationWithName:CRBExternalAccessoryManagerDidConnectNotification
+  NSNotification *notification = [NSNotification notificationWithName:CRBExternalAccessoryManagerDidDisconnectNotification
                                                                object:self
                                                              userInfo:nil];
   NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
